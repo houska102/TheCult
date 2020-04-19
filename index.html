@@ -1,209 +1,105 @@
 <html>
-
   <head>
-
     <title>C.O.M.T.</title>
-
     <link rel="icon" href="./public/theHappyConeGod.svg">
-
     <script>
-
       var theme = 'light'
-
       function toggleTheme() {
-
         document.body.id = theme === 'dark' ? "light" : "dark";
-
         theme = document.body.id
-
       }
-
     </script>
-
     <style>
-
       body {
-
         margin:0;
-
         padding:0;
-
       }
-
       body#light {
-
         background: rgba(255, 253, 209, 39);
-
         color: black;
-
       }
-
       body#dark {
-
         background: black;
-
         color: white;
-
       }
-
       a {
-
         text-decoration: none;
-
         color:inherit;
-
       }
-
       h1.title {
-
         font-size: 40px;
-
         text-align: center;
-
         color: rgb(182, 19, 19); 
-
         text-shadow: 2px 2px 8px rgb(224, 224, 224); 
-
         font-weight: bold;
-
       }
-
       h3.txt {
-
         text-align: center;
-
         text-decoration: underline;
-
       }
-
       .underText {
-
         display: inline-block;
-
         text-align: center;
-
         position: absolute;
-
         bottom: -20px;
-
         width: 100px;
-
       }
-
       .footer {
-
         width:100vw;
-
         position: fixed;
-
         bottom: 0px;
-
         text-align: center;
-
         padding-bottom:6px;
-
       }
-
       .button {
-
         display: inline-block;
-
         position: fixed;
-
         bottom: 5px;
-
         left: 5px;
-
       }
-
       .flex-row {
-
         display: flex;
-
         flex-wrap:nowrap;
-
         justify-content: space-around;
-
         align-items: center;
-
       }
-
       .flex-item {
-
         display: inline-block;
-
         box-sizing: border-box;
-
       }
-
       .wrap {
-
         flex-wrap:wrap;
-
       } 
-
     </style>
-
   </head>
-
   <body id="light">
-
     <div>
-
       <h1 class="title">
-
         Welcome to the Cult Of Marching Trafficcones
-
       </h1>
-
       <h3 class="txt">
-
         Join Us!
-
       </h3>
-
       <div class="flex-row" style="width:75%;margin:0 auto 30px auto;">
-
-        <a href="http://houska.cultofmarchingtrafficcones.eu/" alt="Accept"  class="flex-item justify-space-around" style="position:relative">
-
+        <a href="http://houska.cultofmarchingtrafficcones.eu/index.html" alt="Accept"  class="flex-item justify-space-around" style="position:relative">
           <span class="underText">Houska</span>
-
           <img src="./public/theHappyConeGod.svg" alt="Houska" height="200" width="100" />
-
         </a>
-
         <a href="http://hvezdar.cultofmarchingtrafficcones.eu/" alt="Decline"  class="flex-item justify-space-around" style="position:relative">
-
           <span class="underText">Hvezdar</span>
-
-          <img src="./public/Hvezdar.svg" alt="Hvezdar" height="200" width="100" />
-
+          <img src="./public/theDisapointedConeGod.svg" alt="Hvezdar" height="200" width="100" />
         </a>
-
       </div>
-
       <div class="flex-row wrap">
-
         <a href="http://minehige.cultofmarchingtrafficcones.eu/" alt="Minehige"  class="flex-item justify-space-around" style="position:relative">
-
           <span class="underText">Minehige</span>
-
-          <img src="./public/ConeTechGuy.svg" alt="Minehige" height="150" width="100" />
-
+          <img src="./public/theDisapointedConeGod.svg" alt="Minehige" height="150" width="100" />
         </a>
-
       </div>
-
       <div class="footer">
-
         &copy; Hvezdar, Houska @2020
-
       </div>
-
       <button type="button" class="button" onclick="toggleTheme();">Change Theme</button>
-
     </div>
-
   </body>
-
 </html>

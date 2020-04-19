@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>C.O.M.T.</title>
-    <link rel="icon" href="http://wwww.cultofmarchingtrafficcones.eu/public/theHappyConeGod.svg">
+    <link rel="icon" href="http://www.cultofmarchingtrafficcones.eu/public/theHappyConeGod.svg">
     <script>
       var theme = 'light'
       function toggleTheme() {
@@ -46,7 +46,7 @@
       }
       .footer {
         width:100vw;
-        position: fixed;
+        position: absolute;
         bottom: 0px;
         text-align: center;
         padding-bottom:6px;
@@ -70,6 +70,10 @@
       .wrap {
         flex-wrap:wrap;
       } 
+      .titledCone {
+        position:relative; 
+        margin-bottom: 30px;
+      }
     </style>
   </head>
   <body id="light">
@@ -80,26 +84,26 @@
       <h3 class="txt">
         Join Us!
       </h3>
-      <div class="flex-row" style="width:75%;margin:0 auto 30px auto;">
-        <a href="http://houska.cultofmarchingtrafficcones.eu/index.html" alt="Accept"  class="flex-item justify-space-around" style="position:relative">
+      <div class="flex-row" style="width:75%;margin: 0 auto">
+        <a href="http://houska.cultofmarchingtrafficcones.eu/index.html" alt="Accept"  class="flex-item justify-space-around titledCone">
           <span class="underText">Houska</span>
-          <img src="http://wwww.cultofmarchingtrafficcones.eu/public/coronaConeGod.svg" alt="Houska" height="200" width="100" />
+          <img src="http://www.cultofmarchingtrafficcones.eu/public/coronaConeGod.svg" alt="Houska" height="200" width="100" />
         </a>
-        <a href="http://hvezdar.cultofmarchingtrafficcones.eu/" alt="Decline"  class="flex-item justify-space-around" style="position:relative">
+        <a href="http://hvezdar.cultofmarchingtrafficcones.eu/" alt="Decline"  class="flex-item justify-space-around titledCone">
           <span class="underText">Hvezdar</span>
-          <img src="http://wwww.cultofmarchingtrafficcones.eu/public/Hvezdar.svg" alt="Hvezdar" height="200" width="100" />
+          <img src="http://www.cultofmarchingtrafficcones.eu/public/Hvezdar.svg" alt="Hvezdar" height="200" width="100" />
         </a>
       </div>
       <div class="flex-row wrap">
-        <a href="http://minehige.cultofmarchingtrafficcones.eu/" alt="Minehige"  class="flex-item justify-space-around" style="position:relative">
+        <a href="http://minehige.cultofmarchingtrafficcones.eu/" alt="Minehige"  class="flex-item justify-space-around titledCone">
           <span class="underText">Minehige</span>
-          <img src="http://wwww.cultofmarchingtrafficcones.eu/public/ConeTechGuy.svg" alt="Minehige" height="150" width="100" />
+          <img src="http://www.cultofmarchingtrafficcones.eu/public/ConeTechGuy.svg" alt="Minehige" height="150" width="100" />
         </a>
       </div>
-      <div class="footer">
-        &copy; Hvezdar, Houska @2020
-      </div>
       <button type="button" class="button" onclick="toggleTheme();">Change Theme</button>
+    </div>
+    <div class="footer">
+      &copy; Hvezdar, Houska @2020
     </div>
   </body>
 </html>

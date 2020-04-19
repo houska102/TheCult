@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <style>
+      #game {
+        display:inline-block;
+        background: black; 
+      }
+      .tile {
+        box-sizing: border-box;
+        display: inline-flex;
+        width: 50px;
+        height: 50px;
+        color: white;
+        padding: 15px;
+        align-content: center;
+        justify-content: center;
+      }
+      .wall {
+        background: #1616E6;
+        color: #1616E6;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      
+    </div>
+    <script>
+      var fieldGridTemplate = [
+        ["X","X","X","X","X","X","X","X","X","X","X","X","X"],
+        ["X","+","+","+","+","+","X","+","+","+","+","+","X"],
+        ["X","+","X","X","X","+","X","+","X","X","X","+","X"],
+        ["X","+","X","+","X","+","X","+","X","+","X","+","X"],
+        ["X","+","+","+","X","+","+","+","X","+","+","+","X"],
+        ["X","+","X","X","X","X","X","X","X","X","X","+","X"],
+        ["X","+","+","+","+","+","+","+","+","+","+","+","X"],
+        ["X","+","X","X","+","X","O","X","+","X","X","+","X"],
+        ["X","+","+","X","+","X","X","X","+","X","+","+","X"],
+        ["X","+","X","X","+","+","+","+","+","X","X","+","X"],
+        ["X","+","X","+","+","+","X","+","+","+","X","+","X"],
+        ["X","+","X","X","X","+","X","+","X","X","X","+","X"],
+        ["X","+","+","+","+","+","X","+","+","+","+","+","X"],
+        ["X","X","X","X","X","X","X","X","X","X","X","X","X"]
+      ]
+      var gameHeight = fieldGridTemplate.length
+      var gameWidth = fieldGridTemplate[0].length
+      window.onload= () => {
+        function generateMap() {
+          return fieldGridTemplate.reduce((map, row, y) => {
+            map.push(row.reduce((acc, tile, x) => {
+              if(tile === 'X') {
+                const wall = {
+                  type: 'wall',
+                  passable: false,
+                  content: 'X',
+                  getTile () {
+                    let tile = document.createElement('span')
+                    tile.className = 'tile wall'
+                    tile.innerHTML = '&nbsp;'
+                    return tile
+                  }
+                }
+                acc.push(wall)
+              } else {
+                if (tile === 'O') {
+                  player.x = x
+                  player.y = y
+                }
+                const road = {
+                  type: 'road',
+                  passable: true,
+                  content: '+',
+                  getTile () {
+                    let tile = document.createElement('span')
+                    tile.className = 'tile'
+                    tile.innerHTML = this.content
+                    return tile
+                  }
+                }
+                acc.push(road)
+              }
+              return acc
+            }, []))
+            return map
+          }, [])
+        }
+        function drawFrame(gameMap) {
+          gameBlock.innerHTML = ''
+          gameMap[player.y][player.x].content = player.symbol
+          gameMap.forEach(row => {
+            let rowBlock = document.createElement('div')
+            row.forEach(tile => {
+              rowBlock.appendChild(tile.getTile(tile.content))
+            })
+            gameBlock.appendChild(rowBlock)
+          })
+        }
+        function movePlayer (gameMap, y, x) {
+          if ((y >= 0 && y < gameHeight) && (x >= 0 && x < gameWidth) && gameMap[y][x].passable) {
+            gameMap[player.y][player.x].content = '&nbsp;'
+            player.y = y
+            player.x = x
+            drawFrame(gameMap)
+          }
+        }
+
+        var gameBlock = document.querySelector('#game')
+        var player = {
+          x: 5,
+          y: 5,
+          symbol: 'O'
+        }
+        var gameMap = generateMap()
+        drawFrame(gameMap)
+        
+
+        document.addEventListener('keydown', (e) => {
+          switch(e.keyCode) {
+            case 38: //UP
+              movePlayer(gameMap, player.y - 1, player.x)
+              break;
+            case 40: //DOWN
+              movePlayer(gameMap, player.y + 1, player.x)
+              break;
+            case 39: // RIGHT
+              movePlayer(gameMap, player.y, player.x + 1)
+              break;
+            case 37: // LEFT
+              movePlayer(gameMap, player.y, player.x - 1)
+              break;
+          }
+        })
+      }
+    </script>
+  </body>
+</html>

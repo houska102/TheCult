@@ -1,0 +1,330 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
+    <title>Tic Tac Toe</title>
+    <style>
+      body {
+        margin:0;
+        padding: 0;
+        display: flex;
+      }
+      #GameField {
+        background: #A9A9A9;
+        margin: auto;
+        border-collapse: collapse;
+      }
+      .field {
+        position: relative;
+        box-sizing: border-box;
+        width: 24px;
+        height: 24px;
+        overflow: hidden;
+        border: 1px solid #898989;
+        cursor:pointer;
+        font-size: 20px;
+      }
+      .field:hover {
+        background: #C9C9C9 !important;
+      }
+      .cross {
+        pointer-events: none;
+        cursor: default;
+      }
+      .circle {
+        pointer-events: none;
+        cursor: default;
+      }
+      .triangle {
+        pointer-events: none;
+        cursor: default;
+      }
+      .cross::after {
+          content: 'X';
+          box-sizing: border-box;
+          color: crimson;
+          padding:0px;
+          width:100%;
+          font-weight: 600;
+          line-height: 19px;
+          text-align: center;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          position: absolute;
+          top:-1px;
+      }
+      .circle::after {
+          content: 'O';
+          box-sizing: border-box;
+          color: greenyellow;
+          padding:0px;
+          width:100%;
+          font-weight: 600;
+          line-height: 19px;
+          text-align: center;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          position: absolute;
+          top:-1px;
+      }
+      .triangle::after {
+          content: '\25b2';
+          box-sizing: border-box;
+          color: aqua;
+          padding:0px;
+          width:100%;
+          font-weight: 600;
+          line-height: 19px;
+          text-align: center;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          position: absolute;
+          top:-1px;
+      }
+      .coordinate {
+        background: white;
+        font-weight: 600;
+        line-height: 19px;
+        font-size: 14px;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      .coordinate.row {
+        border-left: none;
+      }
+      .coordinate.column {
+        border-top: none;
+      }
+      .coordinate:hover {
+        background: white;
+      }
+      #lastMove {
+        background: rgb(190, 190, 159);
+        border: 1px solid rgba(231, 231, 198, 0.918);
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-evenly;" id="serverId">
+        <div style="justify-content: space-evenly;"><button id="hostButton">start Session</button></div>
+        <div><input type="text" id="idInput"><button id="joinButton">join Session</button></div>
+      </div>
+      <table id="Gamefield"></table>
+    </div>
+    <script>
+      function initialiseHost () {
+        isHost = true
+        peer = new Peer(null, {
+          debug: 2
+        });
+
+        peer.on('open', function (id) {
+          // Workaround for peer.reconnect deleting previous id
+          if (peer.id === null) {
+            peer.id = lastPeerId;
+          } else {
+            lastPeerId = peer.id;
+          }
+          showServerId(peer.id)
+        });
+
+        peer.on('connection', function (c) {
+          // Allow only a single connection
+          if (conn && conn.open) {
+            c.on('open', function() {
+              c.send("Already connected to another client");
+              setTimeout(function() { c.close(); }, 500);
+            });
+            return;
+          }
+          conn = c;
+          ready();
+        });
+        peer.on('disconnected', function () {
+          status.innerHTML = "Connection lost. Please reconnect";
+
+          // Workaround for peer.reconnect deleting previous id
+          peer.id = lastPeerId;
+          peer._lastServerId = lastPeerId;
+          peer.reconnect();
+        });
+        peer.on('close', function() {
+          conn = null;
+          status.innerHTML = "Connection destroyed. Please refresh";
+        });
+        peer.on('error', function (err) {
+          alert('' + err);
+        });
+      }
+      function initialiseClient () {
+        peer = new Peer(null, {
+          debug: 2
+        });
+
+        peer.on('open', function (id) {
+          // Workaround for peer.reconnect deleting previous id
+          if (peer.id === null) {
+              peer.id = lastPeerId;
+          } else {
+              lastPeerId = peer.id;
+          }
+
+        });
+        peer.on('connection', function (c) {
+          // Disallow incoming connections
+          c.on('open', function() {
+              c.send("Sender does not accept incoming connections");
+              setTimeout(function() { c.close(); }, 500);
+          
+          });
+        });
+        peer.on('disconnected', function () {
+          status.innerHTML = "Connection lost. Please reconnect";
+
+          // Workaround for peer.reconnect deleting previous id
+          peer.id = lastPeerId;
+          peer._lastServerId = lastPeerId;
+          peer.reconnect();
+        });
+        peer.on('close', function() {
+          conn = null;
+          status.innerHTML = "Connection destroyed. Please refresh";
+        });
+        peer.on('error', function (err) {
+          alert('' + err);
+        });
+      }
+
+      function ready() {
+        clearBoard()
+        conn.on('data', function (data) {
+          activeTurn = true
+          fillField(data)
+        });
+        conn.on('close', function () {
+          status.innerHTML = "Connection reset<br>Awaiting connection...";
+          conn = null;
+        });
+      }
+
+      function showServerId (id) {
+        const serverId = document.querySelector('#serverId')
+        serverId.innerHTML = id
+      }
+      function moveLastTurn () {
+
+      }
+
+      function join() {
+        // Close old connection
+        if (conn) {
+          conn.close();
+        }
+        const recvIdInput = document.querySelector('#idInput')
+        // Create connection to destination peer specified in the input field
+        conn = peer.connect(recvIdInput.value, {
+          reliable: true
+        });
+
+        conn.on('open', function () {
+          showServerId(conn.peer);
+          gameBlock.style.pointerEvents = 'all'
+          clearBoard()
+        });
+        
+        conn.on('data', function (data) {
+          activeTurn = true
+          fillField(data)
+        });
+        conn.on('close', function () {
+            console.log('conection closed')
+        });
+      };
+
+
+      function clearBoard() {
+        const fields = gameBlock.querySelectorAll('.cross .circle')
+        fields.forEach(item => {
+          item.className = 'field'
+          return item
+        })
+      }
+      function fillField(id) {
+        const field = document.getElementById('' + id)
+        field.className = isHost ? 'field circle' : 'field cross'
+      }
+      function generateGameField (x, y) {
+        let field = document.createElement('td')
+        field.className = 'field'
+        field.id = x + '-' + y
+        field.addEventListener('click', () => {
+          if (activeTurn) {
+            field.className = isHost ? 'field cross' : 'field circle'
+            conn.send(x + '-' + y)
+            activeTurn = false
+          }
+        })
+        return field
+      }
+      var lastPeerId = null
+      var peer = null
+      var peerId = null
+      var conn = null
+      var isHost = false
+
+
+      var gameBlock = document.querySelector('#GameField')
+      var players = ['cross' ,'circle', 'triangle']
+      var activeTurn = false
+      let tileSize = 24
+      let gameWidth = Math.floor(window.innerWidth / tileSize) - 3
+      let gameHeight = Math.floor(window.innerHeight / tileSize) - 2
+      let columns = document.createElement('colgroup')
+      let alpahberRow = document.createElement('tr')
+      let zeroCoordinate = document.createElement('th')
+      zeroCoordinate.className = 'field coordinate row column'
+      zeroCoordinate.scope="col"
+      alpahberRow.append(zeroCoordinate)
+      for (let x = 0; x < gameWidth; x++) {
+        let column = document.createElement('col')
+        column.span = 1
+        if (x%2 === 0) {
+          column.style.backgroundColor = '#B9B9B9'
+        }
+        columns.append(column)
+        
+        
+        let columnLetter = document.createElement('th')
+        columnLetter.className = 'field coordinate column'
+        columnLetter.innerHTML = x < 26 ? String.fromCharCode(65 + x) : String.fromCharCode(65 + (Math.floor(x/26) - 1)) + String.fromCharCode(65 + x % 26)
+        columnLetter.scope="col"
+        alpahberRow.append(columnLetter)
+      }
+      gameBlock.append(columns, alpahberRow)
+      for (let y = 0; y < gameHeight; y++) {
+        let gameRow = document.createElement('tr')
+        gameRow.className = 'gameRow'
+        let rowNumber = document.createElement('td')
+        rowNumber.className = 'field coordinate row'
+        rowNumber.innerHTML = y
+        gameRow.append(rowNumber)
+        for(let x = 0; x < gameWidth; x++) {
+          gameRow.append(generateGameField(x, y))
+        }
+        gameBlock.append(gameRow)
+      }
+      document.querySelector('#hostButton').addEventListener('click', () => {
+        clearBoard()
+        initialiseHost()
+        activeTurn = true
+        gameBlock.style.pointerEvents = 'all'
+      })
+      document.querySelector('#joinButton').addEventListener('click', () => {
+        clearBoard() 
+        initialiseClient()
+        join()
+        gameBlock.style.pointerEvents = 'all'
+      })
+
+
+
+    </script>
+  </body>
+</html>
